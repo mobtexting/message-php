@@ -9,7 +9,7 @@ class Client
     protected $username;
     protected $password;
     protected $client;
-    protected $endpoint = 'https://api.mobtexting.com/v1/sms';
+    protected $endpoint = 'https://portal.mobtexting.com/api/v2/sms/send';
 
     /**
      * Mobtexting constructor.
@@ -21,13 +21,13 @@ class Client
     {
         $this->username = $username;
         $this->password = $password;
-        $this->client = $client ?: new HttpClient($this->endpoint);
+        $this->client   = $client ?: new HttpClient($this->endpoint);
     }
 
     public function send($to, $params = [])
     {
-        $to = is_array($to) ? implode(',', $to) : $to;
-        $params['to'] = $to;
+        $to              = is_array($to) ? implode(',', $to) : $to;
+        $params['to']    = $to;
         $params['token'] = $this->getToken();
 
         $params = $this->map($params);
@@ -38,10 +38,10 @@ class Client
     protected function map($params = [])
     {
         $mapping = [
-            'token' => 'api_key',
-            'text' => 'message',
-            'to' => 'mobile_no',
-            'from' => 'sender_id',
+            'token' => 'access_token',
+            'text'  => 'message',
+            'to'    => 'to',
+            'from'  => 'sender',
         ];
 
         foreach ($params as $key => $val) {
