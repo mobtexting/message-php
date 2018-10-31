@@ -33,7 +33,8 @@ $message = $client->send(
   '1234567890', // Text this number
   array(
     'from' => 'MOBtxt',
-    'text' => 'Hello from MOBtexting!'
+    'text' => 'Hello from MOBtexting!',
+    'service' => 'T'
   )
 );
 
