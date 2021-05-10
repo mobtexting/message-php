@@ -2,7 +2,7 @@
 
 namespace Mobtexting\Message;
 
-use Mobtexting\Http\Client as HttpClient;
+use GuzzleHttp\Client as GuzzleHttpClient;
 
 class Client
 {
@@ -10,6 +10,7 @@ class Client
     protected $password;
     protected $client;
     protected $endpoint = 'https://portal.mobtexting.com/api/v2/sms/send';
+    protected $body;
 
     /**
      * Mobtexting constructor.
@@ -21,7 +22,7 @@ class Client
     {
         $this->username = $username;
         $this->password = $password;
-        $this->client   = $client ?: new HttpClient($this->endpoint);
+        $this->client   = $client ?: new GuzzleHttpClient();
     }
 
     public function send($to, $params = [])
@@ -32,7 +33,21 @@ class Client
 
         $params = $this->map($params);
 
-        return $this->getClient()->post($params);
+        $response = $this->getClient()->post(
+            $this->endpoint, [
+                'form_params' => $params,
+                'http_errors' => false,
+            ],
+        );
+
+        $this->body = $response->getBody()->getContents();
+
+        return $this;
+    }
+
+    public function json()
+    {
+        return $this->body;
     }
 
     protected function map($params = [])
@@ -40,7 +55,7 @@ class Client
         $mapping = [
             'token' => 'access_token',
             'text'  => 'message',
-            'to'    => 'to',
+            // 'to'    => 'to',
             'from'  => 'sender',
         ];
 
